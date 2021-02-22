@@ -6,11 +6,14 @@ class VivinoAPI:
     def __init__(self, wineList):
         self.wineList = wineList
         self.vivino_wine_list = []
-        for i in range(1, 4):
+        oldresults = []
+        
+        for i in range(1, 99):
             r = requests.get("https://www.vivino.com/api/explore/explore",
                 params = {
                     "currency_code":"CAD",
                     "min_rating":"3",
+                    "order_by": "price", 
                     "page": i,
                 },
                 headers= {
@@ -27,10 +30,13 @@ class VivinoAPI:
                 )
                 for t in r.json()["explore_vintage"]["matches"]
             ]
-            self.vivino_wine_list.append(results)
-            print(self.vivino_wine_list)
-            print(len(results))
+            if results == oldresults and i != 1:
+                break
+            else:
+                oldresults = results
             print(i)
+            self.vivino_wine_list.extend(results)
+
         df = pd.DataFrame(self.vivino_wine_list,columns=['Wine','Year','Rating','num_review'])
         writer = pd.ExcelWriter('vivino_wine_list.xlsx', engine='xlsxwriter')
         df.to_excel(writer, sheet_name='Sheet1')

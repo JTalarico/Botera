@@ -18,7 +18,6 @@ class SAQWineList:
         pageSize = 10
         self.url = 'https://www.saq.com/en/products/wine?product_list_limit=' + str(pageSize)
         self.wineList = []
-        self.getList()
 
     def getList(self):
         response = requests.get(self.url)
